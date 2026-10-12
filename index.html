@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SLONIAK | Engenharia de Manutenção Industrial</title>
+<meta name="description" content="SLONIAK – Engenharia de Manutenção Industrial em Lages/SC. Precisão de 0,05 mm: alinhamento a laser, análise de vibração, balanceamento dinâmico, usinagem em campo e confiabilidade operacional." />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://www.designarena.ai/u/5ef04f38-7585-4713-8db5-cbbf7b904a20" />
+
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        sloniak: {
+          blue: '#1B4A9A',
+          blueDark: '#143A7A',
+          blueDeep: '#0E2A58',
+          blueLight: '#2C63C4',
+          accent: '#E8740C',
+          accentHover: '#C25C06',
+          amber: '#F5A524',
+          lead: '#111827',
+          leadLight: '#1E293B'
+        }
+      },
+      fontFamily: {
+        heading: ['Montserrat', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+
+<style>
+  html { scroll-padding-top: 90px; }
+
+  /* Precision scale / ruler tick marks */
+  .ruler-border {
+    background-image:
+      repeating-linear-gradient(to right, rgba(27,74,154,.45) 0, rgba(27,74,154,.45) 1px, transparent 1px, transparent 6px),
+      repeating-linear-gradient(to right, #1B4A9A 0, #1B4A9A 1.5px, transparent 1.5px, transparent 30px);
+    height: 6px;
+  }
+  .ruler-border-white {
+    background-image:
+      repeating-linear-gradient(to right, rgba(255,255,255,.4) 0, rgba(255,255,255,.4) 1px, transparent 1px, transparent 6px),
+      repeating-linear-gradient(to right, #fff 0, #fff 1.5px, transparent 1.5px, transparent 30px);
+    height: 6px;
+  }
+
+  /* Slider */
+  .slide {
+    transition: opacity 1.1s cubic-bezier(.4,0,.2,1), transform 6s linear;
+  }
+  .slide.active   { opacity: 1; pointer-events: auto; }
+  .slide.inactive { opacity: 0; pointer-events: none; }
+  .slide.active .slide-img { transform: scale(1.08); }
+  .slide-img { transform: scale(1); transition: transform 7s ease-out; }
+
+  .slide.active .slide-anim > * { animation: slideUp .9s cubic-bezier(.22,1,.36,1) backwards; }
+  .slide.active .slide-anim > *:nth-child(1){ animation-delay:.15s }
+  .slide.active .slide-anim > *:nth-child(2){ animation-delay:.3s }
+  .slide.active .slide-anim > *:nth-child(3){ animation-delay:.45s }
+  .slide.active .slide-anim > *:nth-child(4){ animation-delay:.6s }
+  @keyframes slideUp { from { opacity:0; transform: translateY(26px);} to {opacity:1; transform:none;} }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: .1s }
+  .reveal-delay-2 { transition-delay: .2s }
+  .reveal-delay-3 { transition-delay: .3s }
+  .reveal-delay-4 { transition-delay: .4s }
+  .reveal-delay-5 { transition-delay: .5s }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity:1 !important; transform:none !important; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: #111827; }
+  ::-webkit-scrollbar-thumb { background: #1B4A9A; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2C63C4; }
+
+  .pulse-ring::after{
+    content:''; position:absolute; inset:0; border-radius:9999px;
+    border:2px solid rgba(16,185,129,.6); animation: pulsing 2.2s infinite;
+  }
+  @keyframes pulsing { 0%{transform:scale(1);opacity:.9} 100%{transform:scale(1.6);opacity:0} }
+</style>
+</head>
+
+<body class="font-sans bg-slate-50 text-slate-800 antialiased selection:bg-sloniak-blue selection:text-white overflow-x-hidden">
+
+<!-- ░░ Top Info Bar ░░ -->
+<div class="bg-sloniak-lead text-slate-300 text-xs py-2 px-4 border-b border-slate-800 relative z-50 hidden sm:block">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-6">
+      <span class="flex items-center gap-2">
+        <i class="fa-solid fa-gauge-high text-sloniak-amber text-[11px]"></i>
+        <strong class="text-white font-medium">Tolerância 0,05 mm:</strong> Rigor técnico em engenharia industrial
+      </span>
+      <span class="hidden md:flex items-center gap-2">
+        <i class="fa-solid fa-location-dot text-blue-400 text-[11px]"></i>
+        Lages – SC &middot; Atendimento em todo o território nacional
+      </span>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="mailto:sloniak@sloniak.com.br" class="hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-regular fa-envelope text-blue-400"></i> sloniak@sloniak.com.br
+      </a>
+      <a href="https://www.instagram.com/sloniak_engenharia/" target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-brands fa-instagram text-pink-400"></i> @sloniak_engenharia
+      </a>
+      <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20em%20engenharia%20de%20manuten%C3%A7%C3%A3o."
+         target="_blank" rel="noopener" class="hover:text-white transition-colors flex items-center gap-1.5 font-medium text-emerald-400">
+        <i class="fa-brands fa-whatsapp"></i> (49) 99951-4696
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ Header ░░ -->
+<header id="main-header" class="fixed top-5 left-0 w-full z-40 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20 md:h-24 transition-all duration-300" id="navbar-container">
+
+      <a href="#inicio" class="flex items-center group py-2" title="SLONIAK Engenharia de Manutenção Industrial">
+        <img src="image/logo_nav.png"
+             alt="SLONIAK Engenharia de Manutenção Industrial – 0,05 mm"
+             class="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-9 font-heading text-sm font-semibold tracking-wide">
+        <a href="#inicio" class="nav-link text-sloniak-lead hover:text-sloniak-blue transition-colors relative py-1 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-sloniak-blue hover:after:w-full after:transition-all">Início</a>
+        <a href="#trajetoria" class="nav-link text-slate-600 hover:text-sloniak-blue transition-colors relative py-1 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-sloniak-blue hover:after:w-full after:transition-all">Trajetória</a>
+        <a href="#o-que-fazemos" class="nav-link text-slate-600 hover:text-sloniak-blue transition-colors relative py-1 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-sloniak-blue hover:after:w-full after:transition-all">O que fazemos</a>
+        <a href="#contato" class="nav-link text-slate-600 hover:text-sloniak-blue transition-colors relative py-1 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-sloniak-blue hover:after:w-full after:transition-all">Contato</a>
+
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20em%20engenharia%20de%20manuten%C3%A7%C3%A3o%20industrial."
+           target="_blank" rel="noopener"
+           class="ml-1 inline-flex items-center gap-2.5 bg-sloniak-accent hover:bg-sloniak-accentHover text-white px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 font-semibold text-sm">
+          <i class="fa-brands fa-whatsapp text-lg"></i><span>Orçamento</span>
+        </a>
+      </nav>
+
+      <button id="mobile-menu-btn" class="lg:hidden p-2 text-sloniak-lead hover:text-sloniak-blue rounded-md focus:outline-none focus:ring-2 focus:ring-sloniak-blue" aria-label="Abrir menu">
+        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="ruler-border w-full opacity-60"></div>
+
+  <!-- Mobile Drawer -->
+  <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-slate-200 px-6 py-6 space-y-2 shadow-xl">
+    <a href="#inicio" class="mobile-nav-link block font-heading font-semibold text-slate-700 hover:text-sloniak-blue py-3 border-b border-slate-100">Início</a>
+    <a href="#trajetoria" class="mobile-nav-link block font-heading font-semibold text-slate-700 hover:text-sloniak-blue py-3 border-b border-slate-100">Trajetória</a>
+    <a href="#o-que-fazemos" class="mobile-nav-link block font-heading font-semibold text-slate-700 hover:text-sloniak-blue py-3 border-b border-slate-100">O que fazemos</a>
+    <a href="#contato" class="mobile-nav-link block font-heading font-semibold text-slate-700 hover:text-sloniak-blue py-3 border-b border-slate-100">Contato</a>
+    <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20em%20engenharia%20de%20manuten%C3%A7%C3%A3o%20industrial."
+       target="_blank" rel="noopener"
+       class="w-full flex items-center justify-center gap-2 bg-sloniak-accent hover:bg-sloniak-accentHover text-white py-3.5 rounded-lg font-heading font-semibold shadow-md mt-4">
+      <i class="fa-brands fa-whatsapp text-lg"></i> Solicitar Orçamento
+    </a>
+  </div>
+</header>
+
+<!-- ░░ HERO – SLIDER TELA CHEIA ░░ -->
+<section id="inicio" class="relative w-full h-screen overflow-hidden bg-sloniak-lead">
+  <div id="slider-container" class="relative w-full h-full">
+
+    <!-- Slide 1 -->
+    <div class="slide active absolute inset-0 w-full h-full">
+      <div class="absolute inset-0 bg-gradient-to-r from-sloniak-lead/95 via-sloniak-blueDeep/85 to-sloniak-blue/30 z-10"></div>
+      <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=2000&q=80" alt="Engenharia de precisão industrial" class="slide-img w-full h-full object-cover" />
+      <div class="absolute inset-0 z-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
+          <div class="slide-anim max-w-2xl lg:max-w-3xl text-white space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sloniak-blue/40 border border-blue-400/40 text-blue-100 text-[11px] sm:text-sm font-semibold tracking-wider uppercase">
+              <span class="w-2 h-2 rounded-full bg-sloniak-amber animate-ping"></span> Tolerância Milimétrica 0,05 mm
+            </div>
+            <h1 class="text-[2rem] leading-tight sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight sm:leading-[1.05]">
+              Engenharia de Manutenção com <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-white">Precisão Absoluta</span>
+            </h1>
+            <p class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed">
+              Reduza paradas não programadas e eleve a confiabilidade operacional da sua planta com rigor técnico de nível internacional.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-2">
+              <a href="https://wa.me/5549999514696?text=Ol%C3%A1%20SLONIAK%2C%20preciso%20de%20um%20or%C3%A7amento%20para%20minha%20ind%C3%BAstria." target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-3 bg-sloniak-accent hover:bg-sloniak-accentHover text-white px-7 py-3.5 rounded-lg font-heading font-semibold shadow-lg hover:shadow-orange-500/20 transition-all transform hover:-translate-y-0.5">
+                <i class="fa-brands fa-whatsapp text-xl"></i><span>Solicitar Orçamento</span>
+              </a>
+              <a href="#o-que-fazemos" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white px-7 py-3.5 rounded-lg font-heading font-medium transition-all">
+                <span>Nossos Serviços</span><i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide inactive absolute inset-0 w-full h-full">
+      <div class="absolute inset-0 bg-gradient-to-r from-sloniak-lead/95 via-sloniak-blueDeep/85 to-sloniak-blue/30 z-10"></div>
+      <img src="https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=2000&q=80" alt="Alinhamento e geometria industrial" class="slide-img w-full h-full object-cover" />
+      <div class="absolute inset-0 z-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
+          <div class="slide-anim max-w-2xl lg:max-w-3xl text-white space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sloniak-blue/40 border border-blue-400/40 text-blue-100 text-[11px] sm:text-sm font-semibold tracking-wider uppercase">
+              <i class="fa-solid fa-crosshairs text-sloniak-amber"></i> Alinhamento a Laser &amp; Geometria
+            </div>
+            <h2 class="text-[2rem] leading-tight sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight sm:leading-[1.05]">
+              Elimine Vibrações e <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-white">Desgastes Prematuros</span>
+            </h2>
+            <p class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed">
+              Calibração milimétrica e nivelamento de alta exatidão em eixos, mancais, redutores e turbinas industriais de grande porte.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-2">
+              <a href="https://wa.me/5549999514696?text=Gostaria%20de%20saber%20mais%20sobre%20Alinhamento%20e%20Geometria%20Industrial." target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-3 bg-sloniak-accent hover:bg-sloniak-accentHover text-white px-7 py-3.5 rounded-lg font-heading font-semibold shadow-lg transition-all transform hover:-translate-y-0.5">
+                <i class="fa-brands fa-whatsapp text-xl"></i><span>Falar com Engenheiro</span>
+              </a>
+              <a href="#diferencial" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white px-7 py-3.5 rounded-lg font-heading font-medium transition-all">
+                <span>O Conceito 0,05 mm</span><i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide inactive absolute inset-0 w-full h-full">
+      <div class="absolute inset-0 bg-gradient-to-r from-sloniak-lead/95 via-sloniak-blueDeep/85 to-sloniak-blue/30 z-10"></div>
+      <img src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=2000&q=80" alt="Manutenção preditiva e diagnóstico de falhas" class="slide-img w-full h-full object-cover" />
+      <div class="absolute inset-0 z-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
+          <div class="slide-anim max-w-2xl lg:max-w-3xl text-white space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sloniak-blue/40 border border-blue-400/40 text-blue-100 text-[11px] sm:text-sm font-semibold tracking-wider uppercase">
+              <i class="fa-solid fa-chart-line text-sloniak-amber"></i> Preditiva &amp; Análise de Vibração
+            </div>
+            <h2 class="text-[2rem] leading-tight sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight sm:leading-[1.05]">
+              Preveja Falhas Antes que Elas <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-white">Parem Sua Planta</span>
+            </h2>
+            <p class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed">
+              Monitoramento preditivo contínuo com laudos detalhados emitidos por engenheiros com registro e responsabilidade técnica.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-2">
+              <a href="https://wa.me/5549999514696?text=Gostaria%20de%20or%C3%A7ar%20um%20plano%20de%20Manuten%C3%A7%C3%A3o%20Preditiva." target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-3 bg-sloniak-accent hover:bg-sloniak-accentHover text-white px-7 py-3.5 rounded-lg font-heading font-semibold shadow-lg transition-all transform hover:-translate-y-0.5">
+                <i class="fa-brands fa-whatsapp text-xl"></i><span>Solicitar Diagnóstico</span>
+              </a>
+              <a href="#trajetoria" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white px-7 py-3.5 rounded-lg font-heading font-medium transition-all">
+                <span>Conheça a Sloniak</span><i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide inactive absolute inset-0 w-full h-full">
+      <div class="absolute inset-0 bg-gradient-to-r from-sloniak-lead/95 via-sloniak-blueDeep/85 to-sloniak-blue/30 z-10"></div>
+      <img src="https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?auto=format&fit=crop&w=2000&q=80" alt="Equipe especializada de campo" class="slide-img w-full h-full object-cover" />
+      <div class="absolute inset-0 z-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
+          <div class="slide-anim max-w-2xl lg:max-w-3xl text-white space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sloniak-blue/40 border border-blue-400/40 text-blue-100 text-[11px] sm:text-sm font-semibold tracking-wider uppercase">
+              <i class="fa-solid fa-shield-halved text-sloniak-amber"></i> Prontidão &amp; Confiabilidade 24/7
+            </div>
+            <h2 class="text-[2rem] leading-tight sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight sm:leading-[1.05]">
+              Engenharia de Campo em <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-white">Paradas Críticas</span>
+            </h2>
+            <p class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed">
+              Estrutura completa de ferramentas calibradas e técnicos certificados para paradas programadas e corretivas de alta urgência.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-2">
+              <a href="https://wa.me/5549999514696?text=Preciso%20de%20atendimento%20para%20parada%20de%20manuten%C3%A7%C3%A3o." target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-3 bg-sloniak-accent hover:bg-sloniak-accentHover text-white px-7 py-3.5 rounded-lg font-heading font-semibold shadow-lg transition-all transform hover:-translate-y-0.5">
+                <i class="fa-brands fa-whatsapp text-xl"></i><span>Atendimento Imediato</span>
+              </a>
+              <a href="#contato" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white px-7 py-3.5 rounded-lg font-heading font-medium transition-all">
+                <span>Fale Conosco</span><i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setas -->
+  <button id="prev-slide" class="absolute left-3 sm:left-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm hover:scale-110" aria-label="Slide anterior">
+    <i class="fa-solid fa-chevron-left text-lg"></i>
+  </button>
+  <button id="next-slide" class="absolute right-3 sm:right-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white flex items-center justify-center transition-all backdrop-blur-sm hover:scale-110" aria-label="Próximo slide">
+    <i class="fa-solid fa-chevron-right text-lg"></i>
+  </button>
+
+  <!-- Indicadores -->
+  <div class="absolute bottom-8 left-0 right-0 z-30 flex flex-col items-center gap-3">
+    <div class="flex items-center gap-3" id="slider-indicators">
+      <button class="indicator active w-10 h-1.5 rounded-full bg-sloniak-accent transition-all duration-300" aria-label="Slide 1"></button>
+      <button class="indicator w-4 h-1.5 rounded-full bg-white/40 hover:bg-white transition-all duration-300" aria-label="Slide 2"></button>
+      <button class="indicator w-4 h-1.5 rounded-full bg-white/40 hover:bg-white transition-all duration-300" aria-label="Slide 3"></button>
+      <button class="indicator w-4 h-1.5 rounded-full bg-white/40 hover:bg-white transition-all duration-300" aria-label="Slide 4"></button>
+    </div>
+    <div class="text-[11px] text-slate-400 tracking-wider font-mono hidden sm:flex items-center gap-2">
+      <span>0,00</span><span class="w-12 h-px bg-slate-600"></span>
+      <span class="text-blue-300 font-bold">0,05 mm</span>
+      <span class="w-12 h-px bg-slate-600"></span><span>0,10 mm</span>
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 left-0 w-full ruler-border-white opacity-40 z-30"></div>
+</section>
+
+<!-- ░░ Indicadores numéricos ░░ -->
+<section class="bg-white border-b border-slate-200 py-9">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 text-center md:divide-x divide-slate-100">
+      <div class="reveal">
+        <p class="text-3xl lg:text-4xl font-extrabold font-heading text-sloniak-blue">0,05<span class="text-lg text-slate-500 font-normal"> mm</span></p>
+        <p class="text-[11px] sm:text-xs uppercase tracking-wider text-slate-500 font-medium mt-1">Rigor de Tolerância</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <p class="text-3xl lg:text-4xl font-extrabold font-heading text-sloniak-blue">+15<span class="text-lg text-slate-500 font-normal"> Anos</span></p>
+        <p class="text-[11px] sm:text-xs uppercase tracking-wider text-slate-500 font-medium mt-1">Experiência em Campo</p>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <p class="text-3xl lg:text-4xl font-extrabold font-heading text-sloniak-blue">+500</p>
+        <p class="text-[11px] sm:text-xs uppercase tracking-wider text-slate-500 font-medium mt-1">Projetos Executados</p>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <p class="text-3xl lg:text-4xl font-extrabold font-heading text-sloniak-blue">99,8<span class="text-lg text-slate-500 font-normal">%</span></p>
+        <p class="text-[11px] sm:text-xs uppercase tracking-wider text-slate-500 font-medium mt-1">Disponibilidade de Planta</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ 1. TRAJETÓRIA ░░ -->
+<section id="trajetoria" class="py-20 lg:py-28 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-12 gap-14 lg:gap-16 items-center">
+
+      <div class="lg:col-span-5 reveal">
+        <div class="relative mx-auto max-w-md lg:max-w-none">
+          <div class="rounded-2xl overflow-hidden shadow-2xl bg-white border border-slate-200 p-2">
+            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80"
+                 alt="Engenheiro analisando maquinário industrial com micrômetro"
+                 class="w-full h-80 sm:h-96 object-cover rounded-xl" />
+          </div>
+          <div class="absolute -bottom-7 -right-2 sm:-right-8 bg-white p-4 sm:p-5 rounded-xl shadow-2xl border border-slate-100 max-w-[220px] sm:max-w-[260px]">
+            <img src="https://www.designarena.ai/u/5ef04f38-7585-4713-8db5-cbbf7b904a20" alt="Símbolo SLONIAK" class="w-full h-auto object-contain" />
+            <p class="text-[11px] text-slate-500 font-medium mt-2 text-center">Calibre de lâminas: o padrão de precisão que guia nosso trabalho.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 space-y-6 pt-10 lg:pt-0">
+        <div class="reveal inline-flex items-center gap-2 text-sloniak-blue font-bold text-xs uppercase tracking-widest bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-100">
+          <i class="fa-solid fa-timeline"></i> Nossa Trajetória
+        </div>
+        <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold font-heading text-sloniak-lead leading-tight">
+          Construindo a Confiabilidade Industrial Através do <span class="text-sloniak-blue">Rigor Técnico</span>
+        </h2>
+        <p class="reveal reveal-delay-2 text-slate-600 text-base sm:text-lg leading-relaxed">
+          A <strong class="text-sloniak-blue font-semibold">SLONIAK – Engenharia de Manutenção Industrial</strong> nasceu em Lages, no planalto serrano catarinense,
+          da convicção de que a indústria moderna não tolera improvisos. Em ambientes produtivos contínuos, a diferença entre a lucratividade e o prejuízo
+          reside em frações de milímetro.
+        </p>
+        <p class="reveal reveal-delay-3 text-slate-600 text-base leading-relaxed">
+          Nossa marca carrega orgulhosamente a lâmina de <strong>0,05 mm</strong>: a ferramenta essencial de ajuste fino utilizada por mestres mecânicos e
+          metrologistas. Essa medida simboliza nosso compromisso diário com a exatidão, a integridade dos ativos industriais e a segurança operacional
+          dos nossos parceiros.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-4 pt-4">
+          <div class="reveal reveal-delay-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
+            <i class="fa-solid fa-compass-drafting text-sloniak-blue text-xl mb-2"></i>
+            <h3 class="font-heading font-bold text-slate-900 text-sm">Metodologia Preditiva</h3>
+            <p class="text-xs text-slate-500 mt-1">Diagnósticos baseados em telemetria e análise científica de dados mecânicos.</p>
+          </div>
+          <div class="reveal reveal-delay-3 bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
+            <i class="fa-solid fa-stamp text-sloniak-blue text-xl mb-2"></i>
+            <h3 class="font-heading font-bold text-slate-900 text-sm">Responsabilidade ART</h3>
+            <p class="text-xs text-slate-500 mt-1">Laudos técnicos chancelados com recolhimento de Anotação de Responsabilidade Técnica.</p>
+          </div>
+          <div class="reveal reveal-delay-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
+            <i class="fa-solid fa-stopwatch text-sloniak-blue text-xl mb-2"></i>
+            <h3 class="font-heading font-bold text-slate-900 text-sm">Agilidade em Campo</h3>
+            <p class="text-xs text-slate-500 mt-1">Intervenções planejadas para minimizar drasticamente o tempo de máquina parada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ruler-border opacity-40"></div>
+
+<!-- ░░ 2. O QUE FAZEMOS ░░ -->
+<section id="o-que-fazemos" class="py-20 lg:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto space-y-4 mb-14 lg:mb-16">
+      <div class="reveal inline-flex items-center gap-2 text-sloniak-blue font-bold text-xs uppercase tracking-widest bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-100">
+        <i class="fa-solid fa-gears"></i> Soluções em Engenharia
+      </div>
+      <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold font-heading text-sloniak-lead">O Que Fazemos: Engenharia Aplicada à Sua Planta</h2>
+      <p class="reveal reveal-delay-2 text-slate-600 text-base sm:text-lg">
+        Atuamos em todas as etapas do ciclo de vida mecânico e estrutural, garantindo estabilidade, eficiência energética e durabilidade extrema dos equipamentos.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8">
+
+      <!-- Card 1 -->
+      <div class="reveal bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-crosshairs"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Alinhamento a Laser &amp; Geometria</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Alinhamento de eixos e cardans com sistemas ópticos e laser de alta resolução. Correção de pé-manco, nivelamento de bases e alinhamento geométrico de polias e rolos.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Redução do consumo de energia elétrica</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Prolongamento da vida útil de acoplamentos</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Eliminação de sobrecargas em rolamentos</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20o%20servi%C3%A7o%20de%20Alinhamento%20a%20Laser." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="reveal reveal-delay-1 bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-wave-square"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Análise de Vibração &amp; Preditiva</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Coleta espectral e monitoramento contínuo em motores, redutores, ventiladores e bombas centrífugas. Identificação de folgas, desbalanceamento e falhas incipientes de rolamento.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Laudos técnicos com curvas de tendência</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Análise de frequência de engrenamento</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Eliminação de quebras catastróficas</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20o%20servi%C3%A7o%20de%20An%C3%A1lise%20de%20Vibra%C3%A7%C3%A3o." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="reveal reveal-delay-2 bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Manutenção Preventiva &amp; Corretiva</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Planos estruturados de intervenção periódica e atendimento emergencial. Desmontagem, substituição de componentes nobres, raspagem de barramentos e calibração de folgas.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Ajustes de tolerâncias por calibres de lâminas</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Revisão completa de caixas de engrenagens</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Testes dinâmicos de carga e temperatura</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20o%20servi%C3%A7o%20de%20Manuten%C3%A7%C3%A3o%20Mec%C3%A2nica." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="reveal bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-industry"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Usinagem em Campo &amp; Ajustagem</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Mandrilhamento portátil, faceamento de flanges e fresamento in loco, sem necessidade de desinstalar e transportar peças pesadas até oficinas externas.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Economia com logística e tempo de parada</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Reconstituição de eixos danificados no local</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Acabamentos com controle de rugosidade</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20Usinagem%20em%20Campo." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="reveal reveal-delay-1 bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-circle-nodes"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Balanceamento Dinâmico em Campo</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Correção de desbalanceamento estático e dinâmico diretamente na máquina, operando em sua própria rotação e base de trabalho.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Em conformidade com a norma ISO 1940-1</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Rotores balanceados em 1 e 2 planos</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Redução imediata de ruído e esforço mecânico</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20Balanceamento%20Din%C3%A2mico." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="reveal reveal-delay-2 bg-slate-50 hover:bg-white rounded-2xl p-7 border border-slate-200 hover:border-sloniak-blue/40 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-blue-50 text-sloniak-blue group-hover:bg-sloniak-blue group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 mb-6 shadow-sm"><i class="fa-solid fa-clipboard-check"></i></div>
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead group-hover:text-sloniak-blue transition-colors mb-3">Engenharia de Confiabilidade &amp; PCM</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">Estruturação e auditoria de Planos de Manutenção (PCM), Análise de Modos e Efeitos de Falha (FMEA) e gestão estratégica de ativos mecânicos industriais.</p>
+          <ul class="text-xs text-slate-500 space-y-2 mb-6 border-t border-slate-200/60 pt-4">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Indicadores MTBF e MTTR aprimorados</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Otimização dos custos com sobressalentes</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sloniak-accent text-[11px]"></i> Treinamento técnico in company</li>
+          </ul>
+        </div>
+        <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20Engenharia%20de%20Confiabilidade." target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-sm font-heading font-semibold text-sloniak-blue group-hover:text-sloniak-accent transition-colors">
+          Consultar serviço <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-14 text-center reveal">
+      <a href="https://wa.me/5549999514696?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20uma%20visita%20t%C3%A9cnica%20da%20Sloniak." target="_blank" rel="noopener"
+         class="inline-flex items-center gap-3 bg-sloniak-blue hover:bg-sloniak-blueDark text-white px-8 py-4 rounded-xl font-heading font-semibold shadow-lg hover:shadow-blue-900/30 transition-all transform hover:-translate-y-0.5">
+        <i class="fa-regular fa-calendar-check text-lg"></i><span>Agendar Visita Técnica à Sua Indústria</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ 3. DIFERENCIAL 0,05 mm ░░ -->
+<section id="diferencial" class="py-20 lg:py-28 bg-sloniak-lead text-white relative overflow-hidden">
+  <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+
+      <div class="lg:col-span-6 space-y-6">
+        <div class="reveal inline-flex items-center gap-2 text-sloniak-amber font-bold text-xs uppercase tracking-widest bg-amber-500/10 px-3.5 py-1.5 rounded-full border border-amber-500/20">
+          <i class="fa-solid fa-microscope"></i> DNA de Metrologia
+        </div>
+        <h2 class="reveal reveal-delay-1 text-3xl sm:text-5xl font-extrabold font-heading tracking-tight leading-tight">
+          Por que nossa marca traz a lâmina de <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-sky-200">0,05 mm</span>?
+        </h2>
+        <p class="reveal reveal-delay-2 text-slate-300 text-base sm:text-lg leading-relaxed">
+          Em mecânica pesada, muitos acreditam que forças brutas exigem tolerâncias largas. A engenharia da <strong>SLONIAK</strong> prova o contrário:
+          quanto maior a potência do equipamento, mais crítica é a precisão milimétrica.
+        </p>
+
+        <div class="space-y-4 pt-2">
+          <div class="reveal reveal-delay-2 flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+            <div class="w-10 h-10 rounded-lg bg-sloniak-blue flex items-center justify-center text-white shrink-0 font-mono font-bold text-sm">.05</div>
+            <div>
+              <h4 class="font-heading font-bold text-white text-base">Controle Exato de Folgas em Bronzinas e Mancais</h4>
+              <p class="text-slate-400 text-xs sm:text-sm mt-1">A calibragem correta garante a película hidrodinâmica perfeita do óleo lubrificante, evitando o atrito metal-metal.</p>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-3 flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+            <div class="w-10 h-10 rounded-lg bg-sloniak-blue flex items-center justify-center text-white shrink-0"><i class="fa-solid fa-ruler-combined"></i></div>
+            <div>
+              <h4 class="font-heading font-bold text-white text-base">Alinhamento Angular e Paralelo Sem Distorções</h4>
+              <p class="text-slate-400 text-xs sm:text-sm mt-1">Com calços calibrados de precisão, neutralizamos o pé-manco elástico antes de qualquer aperto de torque final.</p>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-4 flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+            <div class="w-10 h-10 rounded-lg bg-sloniak-blue flex items-center justify-center text-white shrink-0"><i class="fa-solid fa-temperature-arrow-down"></i></div>
+            <div>
+              <h4 class="font-heading font-bold text-white text-base">Compensação de Dilatação Térmica</h4>
+              <p class="text-slate-400 text-xs sm:text-sm mt-1">Calculamos o crescimento térmico em regime de carga plena, garantindo que o conjunto trabalhe perfeitamente ajustado a quente.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6 reveal reveal-delay-2">
+        <div class="bg-gradient-to-b from-sloniak-leadLight to-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-700 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="text-[11px] sm:text-xs uppercase font-mono tracking-wider text-slate-300">Padrão Metrológico Sloniak</span>
+            </div>
+            <span class="text-[11px] sm:text-xs font-mono text-sloniak-amber font-semibold">ISO / DIN Standard</span>
+          </div>
+
+          <div class="text-center py-6">
+            <div class="inline-block p-4 rounded-2xl bg-white/5 border border-white/10 mb-4">
+              <img src="https://www.designarena.ai/u/5ef04f38-7585-4713-8db5-cbbf7b904a20" alt="Logomarca SLONIAK – calibre de lâminas" class="h-24 sm:h-28 mx-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,.5)]" />
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold font-heading text-white">O Apalpador de Folga de 0,05 mm</h3>
+            <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-md mx-auto">Representação gráfica da menor lâmina que define a integridade do conjunto mecânico.</p>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-slate-700/80">
+            <div class="flex justify-between text-[10px] sm:text-[11px] font-mono text-slate-400 mb-2">
+              <span>0,00 mm</span><span class="text-sloniak-amber font-bold">0,05 mm</span><span>0,10 mm</span><span>0,20 mm</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-3 p-0.5 border border-slate-700">
+              <div class="bg-gradient-to-r from-sloniak-blueLight to-sloniak-amber h-2 rounded-full w-1/4 relative">
+                <span class="absolute right-0 -top-1 w-4 h-4 bg-white rounded-full shadow border-2 border-sloniak-blue"></span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mt-6 text-xs text-slate-400">
+              <span><i class="fa-solid fa-check-double text-emerald-400 mr-1.5"></i> Tolerância Zero a Erros</span>
+              <a href="#contato" class="text-blue-400 hover:text-white transition-colors underline font-medium">Contratar Engenharia</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ruler-border opacity-40"></div>
+
+<!-- ░░ 4. SETORES ░░ -->
+<section class="py-16 bg-slate-100">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <p class="reveal text-center text-xs font-bold font-heading uppercase tracking-widest text-slate-500 mb-8">Indústrias que confiam na precisão SLONIAK</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+      <div class="reveal bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-tree text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Papel &amp; Celulose</span></div>
+      <div class="reveal reveal-delay-1 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-wheat-awn text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Agroindústria</span></div>
+      <div class="reveal reveal-delay-2 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-cubes-stacked text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Mineração &amp; Britagem</span></div>
+      <div class="reveal reveal-delay-3 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-flask text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Química &amp; Petroquímica</span></div>
+      <div class="reveal reveal-delay-4 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-utensils text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Alimentos &amp; Bebidas</span></div>
+      <div class="reveal reveal-delay-5 bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col items-center gap-2"><i class="fa-solid fa-car text-sloniak-blue text-2xl"></i><span class="text-xs font-heading font-semibold text-slate-700">Automotivo &amp; Autopeças</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ 5. CONTATO ░░ -->
+<section id="contato" class="py-20 lg:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto space-y-4 mb-14 lg:mb-16">
+      <div class="reveal inline-flex items-center gap-2 text-sloniak-blue font-bold text-xs uppercase tracking-widest bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-100">
+        <i class="fa-regular fa-comment-dots"></i> Canais Diretos
+      </div>
+      <h2 class="reveal reveal-delay-1 text-3xl sm:text-4xl font-extrabold font-heading text-sloniak-lead">Inicie seu Diagnóstico ou Solicite uma Proposta</h2>
+      <p class="reveal reveal-delay-2 text-slate-600 text-base sm:text-lg">Converse diretamente com engenheiros especializados. Resposta rápida para paradas programadas ou solicitações de rotina.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+
+      <!-- Infos -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="reveal bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <h3 class="text-xl font-bold font-heading text-sloniak-lead">Nossos Contatos</h3>
+          <div class="space-y-4 text-sm text-slate-600">
+
+            <a href="https://wa.me/5549999999999?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20em%20engenharia%20de%20manuten%C3%A7%C3%A3o." target="_blank" rel="noopener"
+               class="flex items-start gap-4 p-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i class="fa-brands fa-whatsapp text-lg"></i></div>
+              <div>
+                <p class="font-bold font-heading text-slate-800">WhatsApp / Orçamentos</p>
+                <p class="text-emerald-600 font-semibold">(49) 99999-9999</p>
+                <p class="text-xs text-slate-400 mt-0.5">Atendimento rápido em horário comercial</p>
+              </div>
+            </a>
+
+            <div class="flex items-start gap-4 p-3 rounded-xl bg-white border border-slate-200">
+              <div class="w-10 h-10 rounded-lg bg-blue-100 text-sloniak-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-phone"></i></div>
+              <div>
+                <p class="font-bold font-heading text-slate-800">Central Telefônica</p>
+                <p class="text-slate-700 font-medium"> (49) 3018-3618</p>
+                <p class="text-xs text-slate-400 mt-0.5">Segunda a sexta: 08h às 18h</p>
+              </div>
+            </div>
+
+            <a href="mailto:contato@sloniak.com.br" class="flex items-start gap-4 p-3 rounded-xl bg-white border border-slate-200 hover:border-sloniak-blue hover:shadow-md transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-blue-100 text-sloniak-blue flex items-center justify-center shrink-0 group-hover:bg-sloniak-blue group-hover:text-white transition-colors"><i class="fa-regular fa-envelope"></i></div>
+              <div>
+                <p class="font-bold font-heading text-slate-800">E-mail Comercial</p>
+                <p class="text-sloniak-blue font-medium break-all">sloniak@sloniak.com.br</p>
+                <p class="text-xs text-slate-400 mt-0.5">Editais, termos de referência e RFPs</p>
+              </div>
+            </a>
+
+            <a href="https://www.instagram.com/sloniak_engenharia/" target="_blank" rel="noopener"
+               class="flex items-start gap-4 p-3 rounded-xl bg-white border border-slate-200 hover:border-pink-400 hover:shadow-md transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-pink-600 group-hover:to-purple-600 group-hover:text-white transition-all"><i class="fa-brands fa-instagram text-lg"></i></div>
+              <div>
+                <p class="font-bold font-heading text-slate-800">Instagram</p>
+                <p class="text-pink-600 font-medium">@sloniak_engenharia</p>
+                <p class="text-xs text-slate-400 mt-0.5">Bastidores técnicos e obras executadas</p>
+              </div>
+            </a>
+
+            <div class="flex items-start gap-4 p-3 rounded-xl bg-white border border-slate-200">
+              <div class="w-10 h-10 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-location-dot"></i></div>
+              <div>
+                <p class="font-bold font-heading text-slate-800">Sede Administrativa</p>
+                <p class="text-slate-700 leading-relaxed">Avenida Corina Caon, 760 – Bairro Ponte Grande<br>Lages – SC | CEP 88.523-400</p>
+                <p class="text-xs text-slate-500 mt-1">Atendimento em todo o território nacional</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="reveal reveal-delay-1 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+          <iframe
+            title="Mapa da sede SLONIAK – Avenida Corina Caon, 760, Lages/SC"
+            src="https://www.google.com/maps?q=Avenida%20Corina%20Caon%2C%20760%2C%20Ponte%20Grande%2C%20Lages%20-%20SC%2C%2088523-400&output=embed"
+            width="100%" height="240" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+
+        <div class="reveal reveal-delay-2 bg-gradient-to-br from-sloniak-blue to-sloniak-blueDeep text-white p-6 rounded-2xl shadow-lg">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl shrink-0"><i class="fa-solid fa-truck-fast text-sloniak-amber"></i></div>
+            <div>
+              <h4 class="font-heading font-bold text-base">Equipe Volante de Emergência</h4>
+              <p class="text-xs text-blue-100 mt-1">Disponibilidade para diagnósticos e correções in loco em situações de linha parada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário -->
+      <div class="lg:col-span-7 reveal reveal-delay-1">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xl">
+          <h3 class="text-2xl font-bold font-heading text-sloniak-lead mb-2">Envie uma Mensagem</h3>
+          <p class="text-slate-500 text-sm mb-6">Preencha o formulário abaixo para receber uma estimativa ou retorno do departamento de engenharia.</p>
+
+          <form id="contact-form" class="space-y-4" novalidate>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nome completo *</label>
+                <input type="text" id="name" name="name" required placeholder="Ex.: Carlos Silva"
+                  class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm transition-all" />
+              </div>
+              <div>
+                <label for="company" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Empresa / Indústria *</label>
+                <input type="text" id="company" name="company" required placeholder="Ex.: Madeireira Serrana"
+                  class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm transition-all" />
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">E-mail corporativo *</label>
+                <input type="email" id="email" name="email" required placeholder="carlos@empresa.com.br"
+                  class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm transition-all" />
+              </div>
+              <div>
+                <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Telefone / WhatsApp *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="(00) 00000-0000"
+                  class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm transition-all" />
+              </div>
+            </div>
+
+            <div>
+              <label for="service" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Serviço de interesse</label>
+              <select id="service" name="service"
+                class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm bg-white text-slate-700 transition-all">
+                <option>Alinhamento a Laser &amp; Geometria</option>
+                <option>Manutenção Mecânica Preventiva/Corretiva</option>
+                <option>Análise de Vibração &amp; Preditiva</option>
+                <option>Usinagem em Campo</option>
+                <option>Balanceamento Dinâmico em Campo</option>
+                <option>Consultoria de Confiabilidade &amp; PCM</option>
+                <option>Outro desafio mecânico</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="message" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Detalhes do equipamento ou necessidade *</label>
+              <textarea id="message" name="message" rows="4" required
+                placeholder="Descreva o equipamento (redutor, bomba, turbina, motor), potência, sintomas ou escopo desejado..."
+                class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sloniak-blue focus:border-transparent text-sm transition-all"></textarea>
+            </div>
+
+            <button type="submit"
+              class="w-full bg-sloniak-accent hover:bg-sloniak-accentHover text-white py-4 rounded-xl font-heading font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3">
+              <i class="fa-solid fa-paper-plane"></i><span>Enviar Solicitação de Orçamento</span>
+            </button>
+            <p class="text-[11px] text-slate-400 text-center">Ao enviar, você concorda em ser contatado pela equipe comercial da SLONIAK.</p>
+          </form>
+
+          <div id="form-feedback" class="hidden mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3">
+            <i class="fa-solid fa-circle-check text-xl text-emerald-600"></i>
+            <div>
+              <p class="font-bold">Solicitação enviada com sucesso!</p>
+              <p class="text-xs text-emerald-700">Nossa equipe de engenharia entrará em contato em até 2 horas úteis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="bg-sloniak-lead text-slate-400 pt-16 pb-10 border-t border-slate-800">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-800/80">
+
+      <div class="lg:col-span-5 space-y-4">
+        <a href="#inicio" class="inline-block bg-white p-3 rounded-xl shadow-md">
+          <img src="https://www.designarena.ai/u/5ef04f38-7585-4713-8db5-cbbf7b904a20" alt="SLONIAK Engenharia de Manutenção Industrial" class="h-12 w-auto object-contain" />
+        </a>
+        <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+          Referência em rigor técnico, calibração milimétrica e confiabilidade mecânica. Maximizamos a disponibilidade operacional das indústrias brasileiras com precisão de 0,05 mm.
+        </p>
+        <div class="flex items-center gap-3 pt-2">
+          <a href="https://www.instagram.com/sloniak_engenharia/" target="_blank" rel="noopener" aria-label="Instagram"
+             class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-pink-600 hover:to-purple-600 text-white flex items-center justify-center transition-all text-sm"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn"
+             class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-sloniak-blue text-white flex items-center justify-center transition-colors text-sm"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="https://wa.me/5549999999999" target="_blank" rel="noopener" aria-label="WhatsApp"
+             class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors text-sm"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="mailto:contato@sloniak.com.br" aria-label="E-mail"
+             class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-sloniak-blue text-white flex items-center justify-center transition-colors text-sm"><i class="fa-regular fa-envelope"></i></a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-3 space-y-3">
+        <h4 class="font-heading font-bold text-white text-sm uppercase tracking-wider">Navegação</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#inicio" class="hover:text-white transition-colors">Início</a></li>
+          <li><a href="#trajetoria" class="hover:text-white transition-colors">Trajetória</a></li>
+          <li><a href="#o-que-fazemos" class="hover:text-white transition-colors">O que fazemos</a></li>
+          <li><a href="#diferencial" class="hover:text-white transition-colors">Conceito 0,05 mm</a></li>
+          <li><a href="#contato" class="hover:text-white transition-colors">Contato / Orçamento</a></li>
+        </ul>
+      </div>
+
+      <div class="lg:col-span-4 space-y-3">
+        <h4 class="font-heading font-bold text-white text-sm uppercase tracking-wider">Sede &amp; Especialidades</h4>
+        <p class="text-sm leading-relaxed">
+          <i class="fa-solid fa-location-dot text-sloniak-amber mr-1.5"></i>
+          Avenida Corina Caon, 760 – Ponte Grande<br>
+          <span class="pl-5 block">Lages – SC | CEP 88.523-400</span>
+        </p>
+        <ul class="space-y-2 text-sm pt-1">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-angles-right text-xs text-sloniak-amber"></i> Alinhamento a laser de eixos e cardans</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-angles-right text-xs text-sloniak-amber"></i> Análise de vibração e preditiva</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-angles-right text-xs text-sloniak-amber"></i> Balanceamento dinâmico em campo</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-angles-right text-xs text-sloniak-amber"></i> Paradas programadas de manutenção</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4 text-center sm:text-left">
+      <p>&copy; <span id="current-year"></span> SLONIAK – Engenharia de Manutenção Industrial. Todos os direitos reservados.</p>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1 font-mono text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sloniak-amber"></span> Precisão 0,05 mm</span>
+        <span class="text-slate-600">|</span>
+        <a href="#inicio" class="hover:text-white transition-colors">Voltar ao topo <i class="fa-solid fa-arrow-up ml-1"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp flutuante -->
+<a href="https://wa.me/5549999999999?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20em%20engenharia%20de%20manuten%C3%A7%C3%A3o%20industrial."
+   target="_blank" rel="noopener" aria-label="Falar pelo WhatsApp"
+   class="pulse-ring fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:scale-110 transition-all duration-300 group">
+  <i class="fa-brands fa-whatsapp relative z-10"></i>
+  <span class="absolute right-16 bg-slate-900 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden sm:block">
+    Orçamento via WhatsApp
+  </span>
+</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.getElementById('current-year').textContent = new Date().getFullYear();
+
+  /* 1. Menu mobile */
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+
+  mobileMenuBtn.addEventListener('click', () => {
+    const isOpen = !mobileMenu.classList.contains('hidden');
+    mobileMenu.classList.toggle('hidden', isOpen);
+    menuIcon.classList.toggle('fa-bars', isOpen);
+    menuIcon.classList.toggle('fa-xmark', !isOpen);
+  });
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.add('hidden');
+      menuIcon.classList.add('fa-bars');
+      menuIcon.classList.remove('fa-xmark');
+    });
+  });
+
+  /* 2. Navbar ao rolar + link ativo */
+  const header = document.getElementById('main-header');
+  const navbarContainer = document.getElementById('navbar-container');
+  const sections = ['inicio','trajetoria','o-que-fazemos','contato'].map(id => document.getElementById(id));
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  function onScroll() {
+    if (window.scrollY > 40) {
+      header.classList.add('shadow-lg','bg-white/98','backdrop-blur-xl');
+      header.classList.remove('bg-white/90');
+      navbarContainer.classList.remove('h-20','md:h-24');
+      navbarContainer.classList.add('h-16','md:h-20');
+    } else {
+      header.classList.remove('shadow-lg','bg-white/98','backdrop-blur-xl');
+      header.classList.add('bg-white/90');
+      navbarContainer.classList.remove('h-16','md:h-20');
+      navbarContainer.classList.add('h-20','md:h-24');
+    }
+
+    let current = 'inicio';
+    sections.forEach(sec => { if (sec && window.scrollY >= sec.offsetTop - 140) current = sec.id; });
+    navLinks.forEach(l => {
+      const active = l.getAttribute('href') === '#' + current;
+      l.classList.toggle('text-sloniak-blue', active);
+      l.classList.toggle('text-slate-600', !active);
+      l.classList.toggle('text-sloniak-lead', false);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  /* 3. Slider fullscreen */
+  const slides = document.querySelectorAll('.slide');
+  const indicators = document.querySelectorAll('.indicator');
+  const prevBtn = document.getElementById('prev-slide');
+  const nextBtn = document.getElementById('next-slide');
+  const sliderContainer = document.getElementById('slider-container');
+  let currentSlide = 0, slideInterval = null;
+  const slideDelay = 5500;
+
+  function goToSlide(index) {
+    slides[currentSlide].classList.remove('active');
+    slides[currentSlide].classList.add('inactive');
+    indicators[currentSlide].classList.remove('active','w-10','bg-sloniak-accent');
+    indicators[currentSlide].classList.add('w-4','bg-white/40');
+
+    currentSlide = (index + slides.length) % slides.length;
+
+    slides[currentSlide].classList.remove('inactive');
+    slides[currentSlide].classList.add('active');
+    indicators[currentSlide].classList.add('active','w-10','bg-sloniak-accent');
+    indicators[currentSlide].classList.remove('w-4','bg-white/40');
+  }
+  const nextSlide = () => goToSlide(currentSlide + 1);
+  const prevSlide = () => goToSlide(currentSlide - 1);
+  const stopSlideShow = () => { if (slideInterval) clearInterval(slideInterval); };
+  const startSlideShow = () => { stopSlideShow(); slideInterval = setInterval(nextSlide, slideDelay); };
+
+  nextBtn.addEventListener('click', () => { nextSlide(); startSlideShow(); });
+  prevBtn.addEventListener('click', () => { prevSlide(); startSlideShow(); });
+  indicators.forEach((ind, i) => ind.addEventListener('click', () => { goToSlide(i); startSlideShow(); }));
+
+  sliderContainer.addEventListener('mouseenter', stopSlideShow);
+  sliderContainer.addEventListener('mouseleave', startSlideShow);
+  document.addEventListener('visibilitychange', () => document.hidden ? stopSlideShow() : startSlideShow());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { nextSlide(); startSlideShow(); }
+    if (e.key === 'ArrowLeft')  { prevSlide(); startSlideShow(); }
+  });
+  startSlideShow();
+
+  /* Swipe mobile */
+  let touchStartX = 0, touchEndX = 0;
+  sliderContainer.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive:true });
+  sliderContainer.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchStartX - touchEndX > 50) { nextSlide(); startSlideShow(); }
+    else if (touchEndX - touchStartX > 50) { prevSlide(); startSlideShow(); }
+  }, { passive:true });
+
+  /* 4. Scroll reveal */
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('visible'));
+  }
+
+  /* 5. Máscara simples de telefone */
+  const phone = document.getElementById('phone');
+  phone.addEventListener('input', () => {
+    let v = phone.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    else if (v.length > 0) v = `(${v}`;
+    phone.value = v;
+  });
+
+  /* 6. Formulário */
+  const contactForm = document.getElementById('contact-form');
+  const formFeedback = document.getElementById('form-feedback');
+
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+    contactForm.querySelectorAll('[required]').forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('border-red-400','ring-2','ring-red-200');
+        valid = false;
+      } else {
+        field.classList.remove('border-red-400','ring-2','ring-red-200');
+      }
+    });
+    if (!valid) return;
+
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando envio...';
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+      formFeedback.classList.remove('hidden');
+      contactForm.reset();
+      formFeedback.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      setTimeout(() => formFeedback.classList.add('hidden'), 7000);
+    }, 1200);
+  });
+});
+</script>
+</body>
+</html>
